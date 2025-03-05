@@ -1,5 +1,5 @@
 const { convertTimestampToDate } = require("../db/seeds/utils");
-const { createArticleRef } = require("../utils");
+const { createReferenceObject } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -34,5 +34,45 @@ describe("convertTimestampToDate", () => {
     const result = convertTimestampToDate(input);
     const expected = { key: "value" };
     expect(result).toEqual(expected);
+  });
+});
+
+describe("createReferenceObject", () => {
+  test("creates reference object with key-value pairs based on input", () => {
+    const input = [
+      { id: 1, name: "Alice" },
+      { id: 2, name: "Bob" },
+    ];
+    const result = createReferenceObject(input, "id", "name");
+    expect(result).toEqual({
+      1: "Alice",
+      2: "Bob",
+    });
+  });
+
+  test("returns an empty object when input array is empty", () => {
+    const input = [];
+    const result = createReferenceObject(input, "id", "name");
+    expect(result).toEqual({});
+  });
+
+  test("returns an object with key-value pairs when key and value are valid", () => {
+    const input = [
+      { id: 1, name: "Alice", age: 25 },
+      { id: 2, name: "Bob", age: 30 },
+    ];
+    const result = createReferenceObject(input, "id", "name");
+    expect(result[1]).toBe("Alice");
+    expect(result[2]).toBe("Bob");
+  });
+
+  test("handles an array of objects with different key names", () => {
+    const input = [
+      { user_id: 1, user_name: "Alice" },
+      { user_id: 2, user_name: "Bob" },
+    ];
+    const result = createReferenceObject(input, "user_id", "user_name");
+    expect(result[1]).toBe("Alice");
+    expect(result[2]).toBe("Bob");
   });
 });
