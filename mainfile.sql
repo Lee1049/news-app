@@ -14,7 +14,7 @@
 -- SELECT article_id FROM comments;
 
 -- //Every comment row has a value for an article_id
-SELECT * FROM comments;
+-- SELECT * FROM comments;
 
 -- -- Every article row has a value for vote
 -- SELECT * FROM comments WHERE article_id IN (SELECT article_id FROM articles);

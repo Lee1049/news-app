@@ -1,6 +1,5 @@
 const db = require("../connection");
 const format = require("pg-format");
-const { convertTimestampToDate } = require("../seeds/utils");
 const { createReferenceObject } = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
@@ -19,25 +18,26 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return createTopics();
     })
     .then(() => {
-      return insertTopics();
-    })
-    .then(() => {
       return createUsers();
-    })
-    .then(() => {
-      return insertUsers();
     })
     .then(() => {
       return createArticles();
     })
     .then(() => {
-      return insertArticle();
+      return createComments(); //skeleton
     })
     .then(() => {
-      return createComments();
+      return insertTopics();
     })
     .then(() => {
-      return insertComments();
+      return insertUsers();
+    })
+    .then(() => {
+      return insertArticle(); //details
+    })
+    .then((insertedArticle) => {
+      console.log(insertedArticle);
+      return insertComments(insertedArticle);
     });
 
   function createTopics() {
@@ -143,16 +143,16 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     return db.query(query);
   }
 
-  function insertComments() {
+  function insertComments(insertedArticle) {
     const articleRef = createReferenceObject(
-      articleData,
+      insertedArticle.rows,
       "title",
       "article_id"
-    ); //Need to get working
+    );
 
     const formattedComments = commentData.map(
-      ({ article_id, body, votes, author, created_at }) => [
-        article_id,
+      ({ article_title, body, votes, author, created_at }) => [
+        articleRef[article_title],
         body,
         votes,
         author,
