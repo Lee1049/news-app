@@ -11,3 +11,14 @@ exports.fetchApiEndpoints = () => {
       next(err);
     });
 };
+
+exports.fetchAllTopics = () => {
+  return db
+    .query(`SELECT slug, description  FROM topics`)
+    .then(({ rows }) => {
+      return rows;
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
