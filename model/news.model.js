@@ -1,24 +1,19 @@
 const db = require("../db/connection");
-const fs = require("fs/promises");
-
-exports.fetchApiEndpoints = () => {
-  return fs
-    .readFile("./endpoints.json", "utf-8")
-    .then((data) => {
-      return JSON.parse(data);
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
 
 exports.fetchAllTopics = () => {
+  return db.query(`SELECT slug, description  FROM topics`).then(({ rows }) => {
+    return rows;
+  });
+};
+exports.fetchOneArticle = (article_id) => {
   return db
-    .query(`SELECT slug, description  FROM topics`)
+    .query(
+      `SELECT author, title, article_id, body, topic, created_at, votes, article_img_url 
+       FROM articles 
+       WHERE article_id = $1`,
+      [article_id]
+    )
     .then(({ rows }) => {
-      return rows;
-    })
-    .catch((err) => {
-      next(err);
+      return rows[0];
     });
 };
