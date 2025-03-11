@@ -1,4 +1,8 @@
-const { fetchAllTopics, fetchOneArticle } = require("../model/news.model");
+const {
+  fetchAllTopics,
+  fetchOneArticle,
+  fetchAllArticles,
+} = require("../model/news.model");
 
 const endpointsJson = require("../endpoints.json");
 
@@ -23,5 +27,19 @@ exports.getOneArticle = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getAllArticles = (req, res, next) => {
+  const { sort_by, order, topic } = req.query;
+
+  fetchAllArticles(sort_by, order, topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
