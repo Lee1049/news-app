@@ -4,7 +4,6 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const app = require("../app");
 const request = require("supertest");
-const articles = require("../db/data/test-data/articles");
 
 beforeEach(() => {
   return seed(data);
@@ -73,6 +72,51 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Unable to find the article");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("200: responds with articles sorted by date descending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles.length).toBeGreaterThan(0);
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("comment_count");
+          expect(article).not.toHaveProperty("body");
+        });
+        expect(
+          new Date(articles[0].created_at).getTime()
+        ).toBeGreaterThanOrEqual(new Date(articles[1].created_at).getTime());
+      });
+  });
+
+  test("400: responding with an error for an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=InvalidColumn")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort query");
+      });
+  });
+
+  test("404: responding with an error if topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=InvalidTopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Unable to find the topic");
       });
   });
 });
