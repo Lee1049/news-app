@@ -16,9 +16,14 @@ app.get("/api/topics", getAllTopics);
 
 app.get("/api/articles/:article_id", getOneArticle);
 
-app.get("/api/errorpathway", causeInternalServerError);
+app.get("/api/trigger-500-error", causeInternalServerError);
 
 app.use((err, req, res, next) => {
-  res.status(500).send({ msg: "Internal Server Error" });
+  if (err.status && err.msg) {
+    res.status(err.status).send({ msg: err.msg });
+  } else {
+    res.status(500).send({ msg: "Internal Server Error" });
+  }
 });
+
 module.exports = app;

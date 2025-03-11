@@ -57,6 +57,16 @@ describe("GET /api/articles/:article_id", () => {
         expect(article).toHaveProperty("article_img_url");
       });
   });
+
+  test("400: responding with an error if there is an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/notAnId")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid article ID");
+      });
+  });
+
   test("404: responding with an error if there is no article ", () => {
     return request(app)
       .get("/api/articles/999999")
@@ -70,7 +80,7 @@ describe("GET /api/articles/:article_id", () => {
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
     return request(app)
-      .get("/api/errorpathway")
+      .get("/api/trigger-500-error")
       .expect(500)
       .then(({ body }) => {
         expect(body.msg).toBe("Internal Server Error");

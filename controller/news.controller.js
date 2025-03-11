@@ -21,12 +21,7 @@ exports.getOneArticle = (req, res, next) => {
 
   fetchOneArticle(article_id)
     .then((article) => {
-      if (article === undefined) {
-        return res.status(404).send({ msg: "Unable to find the article" });
-      }
       res.status(200).send({ article });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
