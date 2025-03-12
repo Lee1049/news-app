@@ -101,16 +101,12 @@ describe("GET /api/articles", () => {
       });
   });
 
-  test("404: responds with an error if no articles exist", () => {
-    return db
-      .query("DELETE FROM articles RETURNING *;") // Clears articles table
-      .then(() => {
-        return request(app)
-          .get("/api/articles")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe("No articles found");
-          });
+  test("404: responds with an error if article_id does not exist", () => {
+    return request(app)
+      .get(`/api/articles/999999`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Unable to find the article");
       });
   });
 });
@@ -126,7 +122,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 
         comments.forEach((comment) => {
           expect(comment).toHaveProperty("comment_id");
-          expect(comment).toHaveProperty("article_id");
+          expect(comment).toHaveProperty("article_id", 1);
           expect(comment).toHaveProperty("body");
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("author");
