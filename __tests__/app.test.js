@@ -13,9 +13,9 @@ beforeEach(() => {
 afterAll(() => {
   return db.end();
 });
-
+//1
 describe("GET /api", () => {
-  test("200: Responds with an object detailing the documentation for each endpoint", () => {
+  test("200: responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -24,9 +24,9 @@ describe("GET /api", () => {
       });
   });
 });
-
+//2
 describe("GET /api/topics", () => {
-  test("200: Responds with an array of topic objects with slug and description", () => {
+  test("200: responds with an array of topic objects with slug and description", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -40,7 +40,7 @@ describe("GET /api/topics", () => {
       });
   });
 });
-
+//3
 describe("GET /api/articles/:article_id", () => {
   test("200: responds with a single article", () => {
     return request(app)
@@ -76,7 +76,7 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
-
+//4
 describe("GET /api/articles", () => {
   test("200: responds with an array of articles sorted by date descending", () => {
     return request(app)
@@ -114,7 +114,7 @@ describe("GET /api/articles", () => {
       });
   });
 });
-
+//5
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: responds with comments for the given article_id", () => {
     return request(app)
@@ -161,6 +161,78 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Unable to find the article");
+      });
+  });
+});
+//6
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with the new posted comment", () => {
+    const newComment = {
+      author: "butter_bridge",
+      body: "This is a test comment!",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("article_id", 1);
+        expect(comment).toHaveProperty("body", "This is a test comment!");
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at");
+      });
+  });
+
+  test("400: responds with an error if the author or body is missing", () => {
+    const invalidComment1 = { body: "This is missing an author" };
+    const invalidComment2 = { author: "mike_smith" };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(invalidComment1)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing the required author or body");
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(invalidComment2)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Missing the required author or body");
+          });
+      });
+  });
+
+  test("404: responds with an error if the article_id does not exist", () => {
+    const newComment = {
+      author: "mike_smith",
+      body: "This is a comment for a non-existing article!",
+    };
+    return request(app)
+      .post("/api/articles/99999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+
+  test("400: responds with an error if the article_id is not a number", () => {
+    const newComment = {
+      author: "butter_bridge",
+      body: "This is a comment!",
+    };
+
+    return request(app)
+      .post("/api/articles/abc/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid article ID");
       });
   });
 });
