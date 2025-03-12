@@ -4,6 +4,7 @@ const {
   getAllTopics,
   getOneArticle,
   getAllArticles,
+  getArticleComments,
 } = require("./controller/news.controller");
 const { causeInternalServerError } = require("./controller/error.controller");
 
@@ -18,6 +19,8 @@ app.get("/api/topics", getAllTopics);
 app.get("/api/articles/:article_id", getOneArticle);
 
 app.get("/api/articles", getAllArticles);
+
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.get("/api/trigger-500-error", causeInternalServerError);
 
