@@ -26,6 +26,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", createCommentForArticle);
 
+app.patch("/api/articles/:article_id", updateArticleVotes);
+
 app.get("/api/trigger-500-error", causeInternalServerError);
 
 app.use((err, req, res, next) => {

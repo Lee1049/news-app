@@ -232,6 +232,58 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+//7
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: responds by updating the votes of the article when votes INCREASE", () => {
+    const updatedVotes = { inc_votes: 5 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article.votes).toBe(105);
+      });
+  });
+
+  test("200: responds by updating the votes of the article when votes DECREASE", () => {
+    const updatedVotes = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article.votes).toBe(95);
+      });
+  });
+
+  test("400: responds with an error if inc_votes is not a number", () => {
+    const invalidVotes = { inc_votes: "giving_vote" };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(invalidVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid: votes must be a number");
+      });
+  });
+
+  test("404: responds with an error if the article does not exist", () => {
+    const updatedVotes = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/articles/9999")
+      .send(updatedVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+});
 
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
