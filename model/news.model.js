@@ -96,19 +96,16 @@ exports.postCommentForArticle = (article_id, author, body) => {
     });
   }
 
-  // Check if the author exists in the users table
   return db
     .query("SELECT * FROM users WHERE username = $1", [author])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        // If the author (username) doesn't exist, reject with an error
         return Promise.reject({
           status: 404,
-          msg: "User not found", // "User" here refers to the "author" which is a username in this context
+          msg: "User not found",
         });
       }
 
-      // Continue with comment insertion if the article exists
       return db
         .query(
           `INSERT INTO comments (article_id, author, body)
