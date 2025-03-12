@@ -57,5 +57,45 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Creates a new comment for a specific article",
+    "params": [
+      {
+        "name": "article_id",
+        "description": "The ID of the article to post a comment for",
+        "type": "integer",
+        "required": true
+      }
+    ],
+    "requestBody": {
+      "author": "string",
+      "body": "string"
+    },
+    "exampleRequest": {
+      "author": "butter_bridge",
+      "body": "This is a test comment!"
+    },
+    "responses": {
+      "201": {
+        "description": "Successfully created the comment",
+        "body": {
+          "comment": {
+            "comment_id": "integer",
+            "article_id": "integer",
+            "author": "string",
+            "body": "string",
+            "votes": "integer",
+            "created_at": "timestamp"
+          }
+        }
+      },
+      "400": {
+        "description": "Missing the required author or body"
+      },
+      "404": {
+        "description": "User not found"
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ const {
   getAllArticles,
   getArticleComments,
   createCommentForArticle,
+  updateArticleVotes,
 } = require("./controller/news.controller");
 const { causeInternalServerError } = require("./controller/error.controller");
 
