@@ -1,2 +1,5 @@
 node_modules
 .env.*
+mainfile.sql
+output.txt
+To-Do.md

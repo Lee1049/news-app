@@ -2,6 +2,7 @@ const {
   fetchAllTopics,
   fetchOneArticle,
   fetchAllArticles,
+  fetchArticleComments,
 } = require("../model/news.model");
 
 const endpointsJson = require("../endpoints.json");
@@ -33,11 +34,21 @@ exports.getOneArticle = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
-
-  fetchAllArticles(sort_by, order, topic)
+  fetchAllArticles()
     .then((articles) => {
       res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getArticleComments = (req, res, next) => {
+  const { article_id } = req.params;
+
+  fetchArticleComments(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
