@@ -4,6 +4,7 @@ const {
   fetchAllArticles,
   fetchArticleComments,
   postCommentForArticle,
+  updateVotesByArticleId,
 } = require("../model/news.model");
 
 const endpointsJson = require("../endpoints.json");
@@ -67,4 +68,15 @@ exports.createCommentForArticle = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.updateArticleVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  updateVotesByArticleId(article_id, inc_votes)
+    .then((updatedArticle) => {
+      res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
 };
