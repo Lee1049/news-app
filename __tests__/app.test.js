@@ -316,6 +316,34 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+//9
+describe("GET /api/users", () => {
+  test("200: responds with an array of users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(Array.isArray(users)).toBe(true);
+        expect(users.length).toBeGreaterThan(0);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+
+  test("404: responds with an error if no users exist", () => {
+    return db.query("DELETE FROM users;").then(() => {
+      return request(app)
+        .get("/api/users")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No users found");
+        });
+    });
+  });
+});
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
     return request(app)
