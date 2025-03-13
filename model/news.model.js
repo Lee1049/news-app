@@ -28,7 +28,24 @@ exports.fetchOneArticle = (article_id) => {
     });
 };
 
-exports.fetchAllArticles = () => {
+exports.fetchAllArticles = ({ sort_by = "created_at", order = "desc" }) => {
+  const validSortColumns = ["created_at", "title", "votes"];
+  const validOrders = ["asc", "desc"];
+
+  if (!validSortColumns.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid sort column",
+    });
+  }
+
+  if (!validOrders.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid order value",
+    });
+  }
+
   return db
     .query(
       `
@@ -37,15 +54,12 @@ exports.fetchAllArticles = () => {
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC;
+      ORDER BY articles.${sort_by} ${order};
       `
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "No articles found",
-        });
+        return [];
       }
       return rows;
     });
