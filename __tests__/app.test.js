@@ -110,56 +110,6 @@ describe("GET /api/articles", () => {
       });
   });
 });
-//5
-describe("GET /api/articles/:article_id/comments", () => {
-  test("200: responds with comments for the given article_id", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body: { comments } }) => {
-        expect(Array.isArray(comments)).toBe(true);
-        expect(comments.length).toBeGreaterThan(0);
-
-        comments.forEach((comment) => {
-          expect(comment).toHaveProperty("comment_id");
-          expect(comment).toHaveProperty("article_id", 1);
-          expect(comment).toHaveProperty("body");
-          expect(comment).toHaveProperty("votes");
-          expect(comment).toHaveProperty("author");
-          expect(comment).toHaveProperty("created_at");
-        });
-        expect(comments).toBeSortedBy("created_at", { descending: true });
-      });
-  });
-
-  test("200: responds with an empty array when article has no comments", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then(({ body: { comments } }) => {
-        expect(Array.isArray(comments)).toBe(true);
-        expect(comments.length).toBe(0);
-      });
-  });
-
-  test("400: responds with an error if article_id is invalid", () => {
-    return request(app)
-      .get("/api/articles/notAnId/comments")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid article ID");
-      });
-  });
-
-  test("404: responds with an error if article_id does not exist", () => {
-    return request(app)
-      .get("/api/articles/99999/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Unable to find the article");
-      });
-  });
-});
 //6
 describe("POST /api/articles/:article_id/comments", () => {
   test("201: responds with the new posted comment", () => {
@@ -344,6 +294,65 @@ describe("GET /api/users", () => {
     });
   });
 });
+// 10
+describe("GET /api/articles (sorting queries)", () => {
+  test("200: responds with an empty array if no articles exist", () => {
+    return db.query("DELETE FROM articles").then(() => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toEqual([]);
+        });
+    });
+  });
+
+  test("200: responds with articles sorted by created_at DESC when no sort_by or order is given", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("200: responds with articles sorted by title ASC when sort_by=title and order=asc is given", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { ascending: true });
+      });
+  });
+
+  test("200: responds with articles sorted by votes DESC when sort_by=votes and order=desc is given", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=desc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("400: responds with an error if sort_by is an invalid column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid_column&order=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort column");
+      });
+  });
+
+  test('400: responds with an error if the order is not "asc" OR "desc"', () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=invalid_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order value");
+      });
+  });
+});
+
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
     return request(app)

@@ -10,21 +10,68 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles, option to sort by the given query parameters",
     "queries": ["author", "topic", "sort_by", "order"],
+    "queriesExplanation": {
+      "author": {
+        "description": "Filter the articles by a specific author.",
+        "example": "author=butter_bridge"
+      },
+      "topic": {
+        "description": "Filter the articles by a specific topic.",
+        "example": "topic=mitch"
+      },
+      "sort_by": {
+        "description": "Sort the articles by a specific field. Accepted values are `created_at`,`title`, and `votes`",
+        "example": "sort_by=created_at"
+      },
+      "order": {
+        "description": "Specify the order of sorting. Accepted values are `asc` or `desc`",
+        "example": "order=desc"
+      }
+    },
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": "1594329060000",
+          "votes": 100,
+          "comment_count": 11,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         }
       ]
-    }
+    },
+    "exampleRequests": [
+      {
+        "description": "Get the articles sorted by creation date in desc order",
+        "query": "sort_by=created_at&order=desc"
+      },
+      {
+        "description": "Get the articles sorted by votes in asc order",
+        "query": "sort_by=votes&order=asc"
+      },
+      {
+        "description": "Get the articles filtered by topic and sorted by title in desc order",
+        "query": "topic=mitch&sort_by=title&order=desc"
+      }
+    ],
+    "errors": [
+      {
+        "status": 400,
+        "msg": "Invalid sort column"
+      },
+      {
+        "status": 400,
+        "msg": "Invalid order value"
+      },
+      {
+        "status": 404,
+        "msg": "No articles found"
+      }
+    ]
   },
   "GET /api/articles/:article_id": {
     "description": "serves a specific article by its article_id",
