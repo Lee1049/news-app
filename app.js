@@ -7,6 +7,7 @@ const {
   getArticleComments,
   createCommentForArticle,
   updateArticleVotes,
+  deleteCommentById,
 } = require("./controller/news.controller");
 const { causeInternalServerError } = require("./controller/error.controller");
 
@@ -28,10 +29,14 @@ app.post("/api/articles/:article_id/comments", createCommentForArticle);
 
 app.patch("/api/articles/:article_id", updateArticleVotes);
 
+app.delete("/api/comments/:comment_id", deleteCommentById);
+
 app.get("/api/trigger-500-error", causeInternalServerError);
 
 app.use((err, req, res, next) => {
-  if (err.status && err.msg) {
+  if (err.code === "22P02") {
+    res.status(400).send({ msg: "Invalid comment ID" });
+  } else if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else {
     res.status(500).send({ msg: "Internal Server Error" });
