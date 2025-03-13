@@ -131,5 +131,12 @@
         "msg": "Article not found"
       }
     ]
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment through its comment_id",
+    "params": "comment_id",
+    "exampleResponse": {
+      "status": 204
+    }
   }
 }

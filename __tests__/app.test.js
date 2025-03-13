@@ -284,7 +284,38 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+//8
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: responds by deleting the comment, returning no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return db.query("SELECT * FROM comments WHERE comment_id = 1;");
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(0);
+      });
+  });
 
+  test("400: responds with error if the comment is invalid", () => {
+    return request(app)
+      .delete("/api/comments/notAnId")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid comment ID");
+      });
+  });
+
+  test("404: responds with an error if the comment does not exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
+});
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
     return request(app)
