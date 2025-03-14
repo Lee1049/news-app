@@ -466,6 +466,31 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       });
   });
 });
+//13
+describe("GET /api/users/:username", () => {
+  it("200: responds with a user object when the username exists", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toHaveProperty("username", "butter_bridge");
+        expect(user).toHaveProperty(
+          "avatar_url",
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        );
+        expect(user).toHaveProperty("name", "jonny");
+      });
+  });
+
+  it("404: responds with an error when the user does not exist", () => {
+    return request(app)
+      .get("/api/users/non_existent_user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
 
 //Err
 describe("Error handling", () => {
