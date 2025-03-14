@@ -78,7 +78,7 @@
       {
         "status": 400,
         "msg": "Invalid order value"
-      }
+      },
       {
         "status": 404,
         "msg": "Topic not found"

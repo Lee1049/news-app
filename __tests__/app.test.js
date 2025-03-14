@@ -419,7 +419,55 @@ describe("GET /api/articles (topic query)", () => {
       });
   });
 });
+//12
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("200: responds with the article and includes a comment_count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("article_id", 1);
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("article_img_url");
+        expect(article).toHaveProperty("comment_count");
+        expect(typeof article.comment_count).toBe("string");
+        expect(Number(article.comment_count)).toBeGreaterThanOrEqual(0);
+      });
+  });
 
+  test("200: responds with 0 comment_count if there are no comments for the article", () => {
+    return request(app)
+      .get("/api/articles/4")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("article_id", 4);
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("article_img_url");
+        expect(article).toHaveProperty("comment_count", "0");
+      });
+  });
+
+  test("404: responds with an error if the article does not exist", () => {
+    return request(app)
+      .get("/api/articles/999999") // Using a non-existing article ID
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Unable to find the article");
+      });
+  });
+});
+
+//Err
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
     return request(app)
