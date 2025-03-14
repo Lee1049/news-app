@@ -192,7 +192,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(updatedVotes)
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("votes");
         expect(article.votes).toBe(105);
       });
   });
@@ -205,7 +205,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(updatedVotes)
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("votes");
         expect(article.votes).toBe(95);
       });
   });
@@ -219,6 +219,30 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid: votes must be a number");
+      });
+  });
+
+  test("400: responds with an error if request body doesn't have inc_votes property", () => {
+    const missingVotes = {};
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(missingVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid: votes must be a number");
+      });
+  });
+
+  test("400: responds with an error if article_id is not valid", () => {
+    const updatedVotes = { inc_votes: 5 };
+
+    return request(app)
+      .patch("/api/articles/abc")
+      .send(updatedVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid comment ID");
       });
   });
 
@@ -283,13 +307,13 @@ describe("GET /api/users", () => {
       });
   });
 
-  test("404: responds with an error if no users exist", () => {
+  test("200: responds with an empty array if no users exist", () => {
     return db.query("DELETE FROM users;").then(() => {
       return request(app)
         .get("/api/users")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("No users found");
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users).toEqual([]);
         });
     });
   });
@@ -349,6 +373,49 @@ describe("GET /api/articles (sorting queries)", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid order value");
+      });
+  });
+});
+//11
+describe("GET /api/articles (topic query)", () => {
+  test("200: responds with articles filtered by a valid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "cats");
+        });
+      });
+  });
+
+  test("200: responds with all articles when no topic is provided", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles.length).toBeGreaterThan(0);
+      });
+  });
+
+  test("200: responds with an empty array if no articles exist for the given topic", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
+      });
+  });
+
+  test("404: responds with an error if the topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=nonexistent_topic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic not found");
       });
   });
 });

@@ -56,6 +56,18 @@
       {
         "description": "Get the articles filtered by topic and sorted by title in desc order",
         "query": "topic=mitch&sort_by=title&order=desc"
+      },
+      {
+        "description": "Get the articles filtered by a topic such as 'cats'",
+        "query": "topic=cats"
+      },
+      {
+        "description": "Gets all the articles if no topic is selected",
+        "query": "/api/articles"
+      },
+      {
+        "description": "Gets the articles by topic and returns an empty array if nonexistent",
+        "query": "articles?topic=paper"
       }
     ],
     "errors": [
@@ -66,10 +78,10 @@
       {
         "status": 400,
         "msg": "Invalid order value"
-      },
+      }
       {
         "status": 404,
-        "msg": "No articles found"
+        "msg": "Topic not found"
       }
     ]
   },
@@ -181,10 +193,7 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes a comment through its comment_id",
-    "params": "comment_id",
-    "exampleResponse": {
-      "status": 204
-    }
+    "params": "comment_id"
   },
   "GET /api/users": {
     "description": "Gets all users from the database.",
@@ -197,12 +206,6 @@
           "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         }
       ]
-    },
-    "errors": [
-      {
-        "status": 404,
-        "msg": "No users found"
-      }
-    ]
+    }
   }
 }
