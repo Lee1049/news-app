@@ -1,6 +1,27 @@
-# News App
+## News App
 
-# Setting Up Environment Variables
+A RESTful API built with Node.js, Express, and PostgreSQL that allows users to interact with news articles, post comments, and update votes.
+
+## Hosted Version
+
+You can access the live API here: https://news-app-backend-project.onrender.com/api
+
+## Getting Started
+
+## Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js**: v18.0.0 or later
+- **PostgreSQL**: v14.0 or later
+
+## Installation
+
+**Clone the repository**
+
+git clone: https://github.com/Lee1049/news-app.git
+
+## Setting Up Environment Variables
 
 ## Step 1: Run the script
 
