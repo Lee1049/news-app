@@ -10,6 +10,7 @@ const {
   deleteCommentById,
   getAllUsers,
   getUserByUsername,
+  updateCommentVotes,
 } = require("./controller/news.controller");
 const { causeInternalServerError } = require("./controller/error.controller");
 
@@ -36,6 +37,8 @@ app.delete("/api/comments/:comment_id", deleteCommentById);
 app.get("/api/users", getAllUsers);
 
 app.get("/api/users/:username", getUserByUsername);
+
+app.patch("/api/comments/:comment_id", updateCommentVotes);
 
 app.get("/api/trigger-500-error", causeInternalServerError);
 
