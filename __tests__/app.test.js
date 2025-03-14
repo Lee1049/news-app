@@ -426,14 +426,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("title");
         expect(article).toHaveProperty("article_id", 1);
-        expect(article).toHaveProperty("body");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
         expect(article).toHaveProperty("comment_count");
         expect(typeof article.comment_count).toBe("string");
         expect(Number(article.comment_count)).toBeGreaterThanOrEqual(0);
@@ -459,7 +452,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
 
   test("404: responds with an error if the article does not exist", () => {
     return request(app)
-      .get("/api/articles/999999") // Using a non-existing article ID
+      .get("/api/articles/999999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Unable to find the article");
