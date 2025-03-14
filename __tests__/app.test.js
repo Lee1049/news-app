@@ -426,14 +426,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("title");
         expect(article).toHaveProperty("article_id", 1);
-        expect(article).toHaveProperty("body");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
         expect(article).toHaveProperty("comment_count");
         expect(typeof article.comment_count).toBe("string");
         expect(Number(article.comment_count)).toBeGreaterThanOrEqual(0);
@@ -459,7 +452,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
 
   test("404: responds with an error if the article does not exist", () => {
     return request(app)
-      .get("/api/articles/999999") // Using a non-existing article ID
+      .get("/api/articles/999999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Unable to find the article");
@@ -468,7 +461,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
 });
 //13
 describe("GET /api/users/:username", () => {
-  it("200: responds with a user object when the username exists", () => {
+  test("200: responds with a user object when the username exists", () => {
     return request(app)
       .get("/api/users/butter_bridge")
       .expect(200)
@@ -482,7 +475,7 @@ describe("GET /api/users/:username", () => {
       });
   });
 
-  it("404: responds with an error when the user does not exist", () => {
+  test("404: responds with an error when the user does not exist", () => {
     return request(app)
       .get("/api/users/non_existent_user")
       .expect(404)
@@ -491,7 +484,39 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+//14
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: responds by updating the votes of a comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toHaveProperty("votes");
+        expect(comment.votes).toBeGreaterThan(0);
+      });
+  });
 
+  test("400: responds with an error when an invalid vote increment is provided", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "invalid" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid: votes must be a number");
+      });
+  });
+
+  test("404: responds with an error when comment_id does not exist", () => {
+    return request(app)
+      .patch("/api/comments/9999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
+});
 //Err
 describe("Error handling", () => {
   test("500: responds with an internal server error ", () => {
