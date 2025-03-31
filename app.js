@@ -15,9 +15,9 @@ const {
 const { causeInternalServerError } = require("./controller/error.controller");
 const cors = require("cors");
 
-app.use(cors());
-
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
