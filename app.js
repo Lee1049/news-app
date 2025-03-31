@@ -13,6 +13,9 @@ const {
   updateCommentVotes,
 } = require("./controller/news.controller");
 const { causeInternalServerError } = require("./controller/error.controller");
+const cors = require("cors");
+
+app.use(cors());
 
 const app = express();
 
